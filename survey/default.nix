@@ -32,15 +32,16 @@ in
   ])."${approach}",
 
   # When changing this, also change the default version of Cabal declared below
-  compiler ? "ghc864",
+  compiler ? "ghc865",
 
   defaultCabalPackageVersionComingWithGhc ?
     ({
       ghc822 = "Cabal_2_2_0_1"; # TODO this is technically incorrect for ghc 8.2.2, should be 2.0.1.0, but nixpkgs doesn't have that
       ghc844 = "Cabal_2_2_0_1";
       ghc863 = throw "static-haskell-nix: ghc863 is no longer supported, please upgrade";
-      ghc864 = "Cabal_2_4_1_0"; # TODO this is technically incorrect for ghc 8.6.4, should be 2.4.0.1, but nixpkgs doesn't have that
+      ghc864 = throw "static-haskell-nix: ghc863 is no longer supported, please upgrade";
       ghc865 = "Cabal_2_4_1_0"; # TODO this is technically incorrect for ghc 8.6.5, should be 2.4.0.1, but nixpkgs doesn't have that
+      ghc881 = "Cabal_3_0_0_0";
     }."${compiler}"),
 
   # Use `integer-simple` instead of `integer-gmp` to avoid linking in
@@ -562,21 +563,7 @@ let
     zlib_both = statify_zlib previous.zlib;
     # Also override the original packages with a throw (which as of writing
     # has no effect) so we can know when the bug gets fixed in the future.
-    acl = issue_61682_throw "acl" previous.acl;
-    attr = issue_61682_throw "attr" previous.attr;
-    bash = issue_61682_throw "bash" previous.bash;
-    coreutils = issue_61682_throw "coreutils" previous.coreutils;
-    diffutils = issue_61682_throw "diffutils" previous.diffutils;
-    findutils = issue_61682_throw "findutils" previous.findutils;
-    gawk = issue_61682_throw "gawk" previous.gawk;
-    gnugrep = issue_61682_throw "gnugrep" previous.gnugrep;
-    gnumake = issue_61682_throw "gnumake" previous.gnumake;
-    gnupatch = issue_61682_throw "gnupatch" previous.gnupatch;
-    gnused = issue_61682_throw "gnused" previous.gnused;
-    gnutar = issue_61682_throw "gnutar" previous.gnutar;
-    gzip = issue_61682_throw "gzip" previous.gzip;
-    patchelf = issue_61682_throw "patchelf" previous.patchelf;
-    xz = issue_61682_throw "xz" previous.xz;
+    # [previously there were overrides here, but they stopped working, read below]
     # For unknown reason we can't do this check on `zlib`, because if we do, we get:
     #
     #   while evaluating the attribute 'zlib_static' at /home/niklas/src/haskell/static-haskell-nix/survey/default.nix:498:5:
@@ -591,6 +578,23 @@ let
     # https://github.com/nh2/static-haskell-nix/issues/47.
     #bzip2 = issue_61682_throw "bzip2" previous.bzip2;
     #pcre = issue_61682_throw "pcre" previous.pcre;
+    # Since the update to nixpkgs master for #61 also for these,
+    # see https://github.com/NixOS/nixpkgs/issues/61682#issuecomment-544215621
+    #acl = issue_61682_throw "acl" previous.acl;
+    #attr = issue_61682_throw "attr" previous.attr;
+    #bash = issue_61682_throw "bash" previous.bash;
+    #coreutils = issue_61682_throw "coreutils" previous.coreutils;
+    #diffutils = issue_61682_throw "diffutils" previous.diffutils;
+    #findutils = issue_61682_throw "findutils" previous.findutils;
+    #gawk = issue_61682_throw "gawk" previous.gawk;
+    #gnugrep = issue_61682_throw "gnugrep" previous.gnugrep;
+    #gnumake = issue_61682_throw "gnumake" previous.gnumake;
+    #gnupatch = issue_61682_throw "gnupatch" previous.gnupatch;
+    #gnused = issue_61682_throw "gnused" previous.gnused;
+    #gnutar = issue_61682_throw "gnutar" previous.gnutar;
+    #gzip = issue_61682_throw "gzip" previous.gzip;
+    #patchelf = issue_61682_throw "patchelf" previous.patchelf;
+    #xz = issue_61682_throw "xz" previous.xz;
 
     postgresql = (previous.postgresql.overrideAttrs (old: { dontDisableStatic = true; })).override {
       # We need libpq, which does not need systemd,
