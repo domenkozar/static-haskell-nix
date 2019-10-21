@@ -339,53 +339,57 @@ let
       # (we include them conditionally here anyway, for the case
       # that the user specifies a different Cabal version e.g. via
       # `stack2nix`):
-      (builtins.concatLists [
-        # -L flag deduplication
-        #   https://github.com/haskell/cabal/pull/5356
-        (lib.optional (pkgs.lib.versionOlder cabalDrv.version "2.4.0.0") (makeCabalPatch {
-          name = "5356.patch";
-          url = "https://github.com/haskell/cabal/commit/fd6ff29e268063f8a5135b06aed35856b87dd991.patch";
-          sha256 = "1l5zwrbdrra789c2sppvdrw3b8jq241fgavb8lnvlaqq7sagzd1r";
-        }))
-      # Patches that as of writing aren't merged yet:
-      ]) ++ [
-        # TODO Move this into the above section when merged in some Cabal version:
-        # --enable-executable-static
-        #   https://github.com/haskell/cabal/pull/5446
-        (if pkgs.lib.versionOlder cabalDrv.version "2.4.0.0"
-          then
-            # Older cabal, from https://github.com/nh2/cabal/commits/dedupe-more-include-and-linker-flags-enable-static-executables-flag-pass-ld-options-to-ghc-Cabal-v2.2.0.1
-            (makeCabalPatch {
-              name = "5446.patch";
-              url = "https://github.com/haskell/cabal/commit/748f07b50724f2618798d200894f387020afc300.patch";
-              sha256 = "1zmbalkdbd1xyf0kw5js74bpifhzhm16c98kn7kkgrwql1pbdyp5";
-            })
-          else
-            (makeCabalPatch {
-              name = "5446.patch";
-              url = "https://github.com/haskell/cabal/commit/cb221c23c274f79dcab65aef3756377af113ae21.patch";
-              sha256 = "02qalj5y35lq22f19sz3c18syym53d6bdqzbnx9f6z3m7xg591p1";
-            })
-        )
-        # TODO Move this into the above section when merged in some Cabal version:
-        # ld-option passthrough
-        #   https://github.com/haskell/cabal/pull/5451
-        (if pkgs.lib.versionOlder cabalDrv.version "2.4.0.0"
-          then
-            # Older cabal, from https://github.com/nh2/cabal/commits/dedupe-more-include-and-linker-flags-enable-static-executables-flag-pass-ld-options-to-ghc-Cabal-v2.2.0.1
-            (makeCabalPatch {
-              name = "5451.patch";
-              url = "https://github.com/haskell/cabal/commit/b66be72db3b34ea63144b45fcaf61822e0fade87.patch";
-              sha256 = "0hndkfb96ry925xzx85km8y8pfv5ka5jz3jvy3m4l23jsrsd06c9";
-            })
-          else
-            (makeCabalPatch {
-              name = "5451.patch";
-              url = "https://github.com/haskell/cabal/commit/0aeb541393c0fce6099ea7b0366c956e18937791.patch";
-              sha256 = "0pa9r79730n1kah8x54jrd6zraahri21jahasn7k4ng30rnnidgz";
-            })
-        )
-      ];
+      if pkgs.lib.versionOlder cabalDrv.version "3.0.0.0"
+        then
+          (builtins.concatLists [
+            # -L flag deduplication
+            #   https://github.com/haskell/cabal/pull/5356
+            (lib.optional (pkgs.lib.versionOlder cabalDrv.version "2.4.0.0") (makeCabalPatch {
+              name = "5356.patch";
+              url = "https://github.com/haskell/cabal/commit/fd6ff29e268063f8a5135b06aed35856b87dd991.patch";
+              sha256 = "1l5zwrbdrra789c2sppvdrw3b8jq241fgavb8lnvlaqq7sagzd1r";
+            }))
+          # Patches that as of writing aren't merged yet:
+          ]) ++ [
+            # TODO Move this into the above section when merged in some Cabal version:
+            # --enable-executable-static
+            #   https://github.com/haskell/cabal/pull/5446
+            (if pkgs.lib.versionOlder cabalDrv.version "2.4.0.0"
+              then
+                # Older cabal, from https://github.com/nh2/cabal/commits/dedupe-more-include-and-linker-flags-enable-static-executables-flag-pass-ld-options-to-ghc-Cabal-v2.2.0.1
+                (makeCabalPatch {
+                  name = "5446.patch";
+                  url = "https://github.com/haskell/cabal/commit/748f07b50724f2618798d200894f387020afc300.patch";
+                  sha256 = "1zmbalkdbd1xyf0kw5js74bpifhzhm16c98kn7kkgrwql1pbdyp5";
+                })
+              else
+                (makeCabalPatch {
+                  name = "5446.patch";
+                  url = "https://github.com/haskell/cabal/commit/cb221c23c274f79dcab65aef3756377af113ae21.patch";
+                  sha256 = "02qalj5y35lq22f19sz3c18syym53d6bdqzbnx9f6z3m7xg591p1";
+                })
+            )
+            # TODO Move this into the above section when merged in some Cabal version:
+            # ld-option passthrough
+            #   https://github.com/haskell/cabal/pull/5451
+            (if pkgs.lib.versionOlder cabalDrv.version "2.4.0.0"
+              then
+                # Older cabal, from https://github.com/nh2/cabal/commits/dedupe-more-include-and-linker-flags-enable-static-executables-flag-pass-ld-options-to-ghc-Cabal-v2.2.0.1
+                (makeCabalPatch {
+                  name = "5451.patch";
+                  url = "https://github.com/haskell/cabal/commit/b66be72db3b34ea63144b45fcaf61822e0fade87.patch";
+                  sha256 = "0hndkfb96ry925xzx85km8y8pfv5ka5jz3jvy3m4l23jsrsd06c9";
+                })
+              else
+                (makeCabalPatch {
+                  name = "5451.patch";
+                  url = "https://github.com/haskell/cabal/commit/0aeb541393c0fce6099ea7b0366c956e18937791.patch";
+                  sha256 = "0pa9r79730n1kah8x54jrd6zraahri21jahasn7k4ng30rnnidgz";
+                })
+            )
+          ]
+        # cabal >= 3.0.0.0 currently needs no patches.
+        else [];
   });
 
   useFixedCabal =
