@@ -1141,7 +1141,7 @@ in
         # There's probably a lack of dead-code elimination with `pkgsStatic`,
         # but even if that worked, this is odd because this should work even
         # when you *use* the `binDir` thing in your executable.
-        cachix
+        # cachix # fails on latest nixpkgs master due to cachix -> nix -> pkgsStatic.busybox dependency, see https://github.com/nh2/static-haskell-nix/pull/61#issuecomment-544331652
         # darcs fails on `pkgsStatic` because
         darcs # Has native dependencies (`libcurl` and its dependencies)
         # pandoc fails on `pkgsStatic` because Lua doesn't currently build there.
