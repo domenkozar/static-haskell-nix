@@ -465,7 +465,7 @@ let
 
   # Takes a curl derivation and overrides it to have both .a and .so files,
   # and have the `curl` executable be statically linked.
-  statify_curl_including_exe = curl_drv:
+  statify_curl_including_exe = curl_drv: zlib_both:
     (curl_drv.override (old: {
       # Disable gss support, because that requires `krb5`, which
       # (as mentioned in note [krb5 can only be static XOR shared]) is a
@@ -474,7 +474,7 @@ let
       # dynamically-linked `curl` binary from the overlay
       # `archiveFilesOverlay` below where `statify_curl_including_exe` is used.
       gssSupport = false;
-      zlib = statify_zlib old.zlib;
+      zlib = zlib_both;
     })).overrideAttrs (old: {
       dontDisableStatic = true;
 
@@ -660,7 +660,10 @@ let
     };
 
     # See comments on `statify_curl_including_exe` for the interaction with krb5!
-    curl = statify_curl_including_exe previous.curl;
+    # As mentioned in [Packages that can't be overridden by overlays], we can't
+    # override zlib to have static libs, so we have to pass in `zlib_both` explicitly
+    # so that `curl` can use it.
+    curl = statify_curl_including_exe previous.curl final.zlib_both;
 
   };
 
