@@ -665,6 +665,20 @@ let
     # so that `curl` can use it.
     curl = statify_curl_including_exe previous.curl final.zlib_both;
 
+    # `fetchurl` uses our overridden `curl` above, but `fetchurl` overrides
+    # `zlib` in `curl`, see
+    # https://github.com/NixOS/nixpkgs/blob/4a5c0e029ddbe89aa4eb4da7949219fe4e3f8472/pkgs/top-level/all-packages.nix#L296-L299
+    # so because of [Packages that can't be overridden by overlays],
+    # it will undo our `zlib` override in `curl` done above (for `curl`
+    # use via `fetchurl`).
+    # So we need to explicitly put our zlib into that one's curl here.
+    fetchurl = previous.fetchurl.override (old: {
+      # Can't use `zlib_both` here (infinite recursion), so we
+      # re-`statify_zlib` `final.zlib` here (interesting that
+      # `previous.zlib` also leads to infinite recursion at time of writing).
+      curl = old.curl.override { zlib = statify_zlib final.zlib; };
+    });
+
   };
 
 
