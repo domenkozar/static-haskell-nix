@@ -972,6 +972,11 @@ let
 
               # TODO For the below packages, it would be better if we could somehow make all users
               # of postgresql-libpq link in openssl via pkgconfig.
+              pg-harness-server =
+                addStaticLinkerFlagsWithPkgconfig
+                  super.pg-harness-server
+                  [ final.openssl final.postgresql ]
+                  "--libs libpq";
               postgresql-orm =
                 addStaticLinkerFlagsWithPkgconfig
                   super.postgresql-orm
