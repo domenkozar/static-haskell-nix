@@ -679,6 +679,10 @@ let
       curl = old.curl.override { zlib = statify_zlib final.zlib; };
     });
 
+    # The Haskell package `H` depends on R, which pulls in OpenJDK,
+    # which is not patched for musl support yet in nixpkgs.
+    # Disable Java support for now.
+    R = previous.R.override { javaSupport = false; };
   };
 
 
