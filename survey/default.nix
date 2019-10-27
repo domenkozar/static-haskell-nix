@@ -1087,13 +1087,20 @@ let
                   then disableCabalFlag super.cryptonite "integer-gmp"
                   else super.cryptonite;
 
-              # The test-suite `test-scientific`'s loops forver on 100% CPU with integer-simple
+              # The test-suite of this package loops forever on 100% CPU (at least on `-O0`).
+              bench-show = dontCheck super.bench-show;
+              # The test-suite of this package loops forever on 100% CPU (at least on `-O0`).
+              # TODO Investigate that because `loop` is nh2's own package.
+              loop = dontCheck super.loop;
+              # The test-suite of this package loops forever on 100% CPU (at least on `-O0`).
+              matrix = dontCheck super.matrix;
+              # The test-suite of this package loops forever on 100% CPU (at least on `-O0`).
               # TODO Ask Bas about it
               scientific =
                 if integer-simple
                   then dontCheck super.scientific
                   else super.scientific;
-              # The test-suite `test-x509-validation`'s loops forver on 100% CPU with integer-simple
+              # The test-suite of this package loops forever on 100% CPU (at least on `-O0`).
               x509-validation =
                 if integer-simple
                   then dontCheck super.x509-validation
@@ -1222,6 +1229,7 @@ in
         "odbc" # undeclared `<odbcss.h>` dependency
         "OpenAL" # transitively depends on `systemd`, which doesn't build with musl
         "qchas" # openmp linker error via openblas
+        "rhine-gloss" # needs opengl
         "sdl2" # transitively depends on `systemd`, which doesn't build with musl
         "sdl2-gfx" # see `sdl2`
         "sdl2-image" # see `sdl2`
