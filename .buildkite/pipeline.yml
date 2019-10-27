@@ -52,4 +52,6 @@ steps:
       cd static-stack/
       mkdir -p static-stack-test-dir
       curl -L https://github.com/commercialhaskell/stack/archive/v2.1.3.tar.gz | tar -xz -C static-stack-test-dir
+      # Use lts-12 because ghc822 is no longer in nixpkgs
+      cp static-stack-test-dir/stack-*/stack-lts-12.yaml static-stack-test-dir/stack-*/stack.yaml
       $(nix-build --no-link -A fullBuildScript --argstr stackDir $PWD/static-stack-test-dir/stack-*)
