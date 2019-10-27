@@ -679,10 +679,19 @@ let
       curl = old.curl.override { zlib = statify_zlib final.zlib; };
     });
 
-    # The Haskell package `H` depends on R, which pulls in OpenJDK,
-    # which is not patched for musl support yet in nixpkgs.
-    # Disable Java support for now.
-    R = previous.R.override { javaSupport = false; };
+    R = (previous.R.override {
+      # R supports EITHER static or shared libs.
+      static = true;
+      # The Haskell package `H` depends on R, which pulls in OpenJDK,
+      # which is not patched for musl support yet in nixpkgs.
+      # Disable Java support for now.
+      javaSupport = false;
+    }).overrideAttrs (old: {
+      # Testsuite newly seems to have at least one segfaulting test case.
+      # Disable test suite for now; Alpine also does it:
+      # https://git.alpinelinux.org/aports/tree/community/R/APKBUILD?id=e2bce14c748aacb867713cb81a91fad6e8e7f7f6#n56
+      doCheck = false;
+    });
   };
 
 
@@ -974,6 +983,9 @@ let
                 ];
               }))).override { openblasCompat = final.openblasCompat; };
 
+              # Test suite segfaults (perhaps because R's test suite also does?).
+              inline-r = dontCheck super.inline-r;
+
               # TODO For the below packages, it would be better if we could somehow make all users
               # of postgresql-libpq link in openssl via pkgconfig.
               pg-harness-server =
@@ -1222,6 +1234,7 @@ in
         "ersatz"
         "gloss-examples" # needs opengl
         "gtk3" # problem compiling `glib` dependency with `Distribution.Simple.UserHooks.UserHooks` type mismatch across Cabal versions; should go away once we no longer have to patch Cabal
+        "H" # `zgemm_: symbol not found` when compiling Main; not clear how that can be provided
         "hamilton" # openmp linker error via openblas
         "hquantlib"
         "ihaskell"
